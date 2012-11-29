@@ -9,13 +9,14 @@ unsigned int outPins[NUMDELAY+NUMPWM] = {2,4,7,8,12,13, 3,5,6,9,10,11};
 unsigned int pinDelays[NUMDELAY+NUMPWM] = {2000,2000,2000,2000,2000,2000, 15,15,15,15,15,15,};
 
 // delay -> pwm
-int currentState[NUMDELAY+NUMPWM] = {0,0,0,0,0,0,0,0,0,0,0,0};
-unsigned long nextUpdate[NUMDELAY+NUMPWM] = {0,0,0,0,0,0,0,0,0,0,0,0};
+int currentState[NUMDELAY+NUMPWM] = {0,0,0,0,0,0,  0,0,0,0,0,0};
+unsigned long nextUpdate[NUMDELAY+NUMPWM] = {0,0,0,0,0,0,   0,0,0,0,0,0};
 
 byte i = 0;
 byte j = 0;
 
 int readState = 0;
+int toPin = 0;
 
 void setup() {                
   // initialize pins
@@ -34,7 +35,7 @@ void loop() {
   // read input switches to see if state has to change on the delayed lights
   for(i=0; i<NUMDELAY; i++) {
     readState = analogRead(inPins[i]);
-    if(readState > 800)
+    if(readState > 500)
       readState = HIGH;
     else
       readState = LOW;
@@ -74,23 +75,19 @@ void loop() {
       // update the current state
       currentState[j+i] += 1;
       // check if it's time to change directions
-      if(currentState[j+i] == 255) {
-        currentState[j+i] = -255;
+      if(currentState[j+i] == 320) {
+        currentState[j+i] = -320;
       }
+
       // write to pin
-      analogWrite(outPins[j+i], abs(currentState[j+i]));
+      toPin = abs(currentState[j+i]);
+      if(toPin > 255)
+        toPin = 255;
+
+      analogWrite(outPins[j+i], toPin);
     }
   }
 
 }
-
-
-
-
-
-
-
-
-
 
 
